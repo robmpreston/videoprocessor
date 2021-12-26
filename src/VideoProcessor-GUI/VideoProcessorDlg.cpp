@@ -241,11 +241,55 @@ CVideoProcessorDlg::~CVideoProcessorDlg()
 //
 
 
+void CVideoProcessorDlg::SetHdrLuminance(const CString& hdrLuminance)
+{
+	m_hdrLuminance = hdrLuminance;
+}
+
+void CVideoProcessorDlg::SetHdrColorSpace(const CString& colorSpace)
+{
+	m_hdrColorSpace = colorSpace;
+}
+
 void CVideoProcessorDlg::StartFullScreen()
 {
 	m_rendererFullScreenStart = true;
 }
 
+void CVideoProcessorDlg::SetVideoConversionOverride()
+{
+	m_videoConversionOverride = true;
+}
+
+void CVideoProcessorDlg::SetColorSpace(const CString& colorSpace)
+{
+	m_colorSpace = colorSpace;
+}
+
+void CVideoProcessorDlg::SetStartStopTime(const CString& startStopTime)
+{
+	m_startStopTime = startStopTime;
+}
+
+void CVideoProcessorDlg::SetNominalRange(const CString& nominalRange)
+{
+	m_nominalRange = nominalRange;
+}
+
+void CVideoProcessorDlg::SetTransferFunction(const CString& transferFunction)
+{
+	m_transferFunction = transferFunction;
+}
+
+void CVideoProcessorDlg::SetTransferMatrix(const CString& transferMatrix)
+{
+	m_transferMatrix = transferMatrix;
+}
+
+void CVideoProcessorDlg::SetPrimaries(const CString& primaries)
+{
+	m_primaries = primaries;
+}
 
 void CVideoProcessorDlg::DefaultRendererName(const CString& rendererName)
 {
@@ -2058,15 +2102,23 @@ BOOL CVideoProcessorDlg::OnInitDialog()
 	{
 		int index = m_hdrColorspaceCombo.AddString(p.first);
 		m_hdrColorspaceCombo.SetItemData(index, (int)p.second);
+
+		if (p.first.CompareNoCase(m_hdrColorSpace) == 0)
+		{
+			m_hdrColorspaceCombo.SetCurSel(index);
+		}
 	}
-	m_hdrColorspaceCombo.SetCurSel(0);
 
 	for (auto p : HDR_LUMINANCE_OPTIONS)
 	{
 		int index = m_hdrLuminanceCombo.AddString(p.first);
 		m_hdrLuminanceCombo.SetItemData(index, (int)p.second);
+
+		if (p.first.CompareNoCase(m_hdrLuminance) == 0)
+		{
+			m_hdrLuminanceCombo.SetCurSel(index);
+		}
 	}
-	m_hdrLuminanceCombo.SetCurSel(0);
 
 	for (auto p : RENDERER_DIRECTSHOW_START_STOP_TIME_OPTIONS)
 	{
@@ -2107,6 +2159,10 @@ BOOL CVideoProcessorDlg::OnInitDialog()
 	{
 		int index = m_rendererVideoConversionCombo.AddString(ToString(p));
 		m_rendererVideoConversionCombo.SetItemData(index, (int)p);
+	}
+	if (p.first.CompareNoCase(m_hdrLuminance) == 0)
+	{
+		m_hdrLuminanceCombo.SetCurSel(index);
 	}
 	m_rendererVideoConversionCombo.SetCurSel(0);
 

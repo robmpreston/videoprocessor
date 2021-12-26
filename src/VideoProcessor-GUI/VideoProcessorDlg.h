@@ -217,10 +217,18 @@ protected:
 
 	// Startup options
 	bool m_rendererFullScreenStart = false;
-	CString m_defaultRendererName;
+	bool m_videoConversionOverride = false;
 	bool m_frameOffsetAutoStart = false;
+	CString m_colorSpace;
 	CString m_defaultFrameOffset = TEXT("90");
-
+	CString m_hdrColorSpace;
+	CString m_hdrLuminance;
+	CString m_defaultRendererName;
+	CString m_dsStartStopTime;
+	CString m_dsNominalRange;
+	CString m_dsTransferFunction;
+	CString m_dsTransferMatrix;
+	CString m_dsNominalRange;
 
 	IVideoRenderer* m_videoRenderer = nullptr;
 	RendererState m_rendererState = RendererState::RENDERSTATE_UNKNOWN;
