@@ -5,6 +5,8 @@
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License along with this program. If not, see < https://www.gnu.org/licenses/>.
  */
+#define CONFIGURU_IMPLEMENTATION 1
+#include <configuru.hpp>
 
 #include <pch.h>
 
@@ -53,37 +55,49 @@ BOOL CVideoProcessorApp::InitInstance()
 		if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED)))
 			throw std::runtime_error("Failed to initialize com objects");
 
-		// Parse command line
-		// https://docs.microsoft.com/en-us/cpp/c-runtime-library/argc-argv-wargv
-		int iNumOfArgs;
-		LPWSTR* pArgs = CommandLineToArgvW(GetCommandLine(), &iNumOfArgs);
-		for (int i = 1; i < iNumOfArgs; i++)
-		{
-			// /fullscreen
-			if (wcscmp(pArgs[i], L"/fullscreen") == 0)
-			{
-				dlg.StartFullScreen();
-			}
+		// Parse configuration file
+		Config config = configuru::parse_file("settings.json", JSON);
 
-			// /renderer "name"
-			if (wcscmp(pArgs[i], L"/renderer") == 0 && (i + 1) < iNumOfArgs)
-			{
-				dlg.DefaultRendererName(pArgs[i + 1]);
-			}
+		bool isFullScreen = config.get_or("fullscreen", false);
+		bool videoConversionOverride = config.get_or("videoConversionOverride", false);
+		std::string colorSpace = config.get_or("colorSpace", "Follow Input");
+		std::string rendererName = config.get_or("renderer", "");
+		std::string frameOffset = config.get_or("frameOffset", "auto");
+		std::string hdrLuminance = config.get_or("luminance", "Follow input");
+		std::string hdrColorSpace = config.get_or("hdrColorSpace", "Follow input")
+		std::string dsStartStopTime = config.get_or("dsStartStopTime", "Clock-Smart");
+		std::string dsNominalRange = config.get_or("dsNominalRange", "Auto");
+		std::string dsTransferFunction = config.get_or("dsTransferFunction", "Auto");
+		std::string dsTransferMatrix = config.get_or("dsTransferMatrix", "Auto");
+		std::string dsPrimaries = config.get_or("dsNominalRange", "Auto");
 
-			// /frame_offset [-value|"auto"]
-			if (wcscmp(pArgs[i], L"/frame_offset") == 0 && (i + 1) < iNumOfArgs)
-			{
-				if (wcscmp(pArgs[i + 1], L"auto") == 0)
-				{
-					dlg.StartFrameOffsetAuto();
-				}
-				else
-				{
-					dlg.StartFrameOffset(pArgs[i + 1]);
-				}
-			}
+		if (isFullScreen) {
+			dlg.StartFullScreen();
 		}
+
+		if (videoConversionOverride) {
+			dlg.SetVideoConversionOverride();
+		}
+		if (rendererName != "") {
+			dlg.rendererName(rendererName);
+		}
+		if (frameOffset == "auto")
+		{
+			dlg.StartFrameOffsetAuto();
+		}
+		else
+		{
+			dlg.StartFrameOffset(frameOffset);
+		}
+
+		dlg.SetColorSpace(colorSpace)
+		dlg.SetHdrLuminance(hdrLuminance);
+		dlg.SetHdrColorSpace(colorSpace);
+		dlg.SetStartStopTime(dsStartStopTime);
+		dlg.SetNominalRange(dsNominalRange);
+		dlg.SetTransferFunction(dsTransferFunction);
+		dlg.SetTransferMatrix(dsTransferMatrix);
+		dlg.SetPrimaries(dsNominalRange);
 
 		// Set set ourselves to high prio.
 		if (!SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS))

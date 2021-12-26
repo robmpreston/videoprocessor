@@ -73,3 +73,4 @@ ipch/
 
 # Archives
 *.7z
+.DS_Store
